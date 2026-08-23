@@ -417,6 +417,96 @@
   }
   .card-cta:hover{ transform: translateY(-2px); filter: brightness(0.92); }
 
+  /* ---- 雙 CTA 按鈕列 ---- */
+  .card-cta-row{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0 4px;
+  }
+  .card-cta-row .card-cta{ margin: 0; }
+  .card-cta-ghost{
+    display: inline-block;
+    padding: 10.5px 26px;
+    border-radius: 999px;
+    border: 1.5px solid var(--line);
+    background: transparent;
+    color: var(--muted);
+    font-family: inherit;
+    font-size: 14.5px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform .15s ease, border-color .15s ease, color .15s ease;
+  }
+  .card-cta-ghost:hover{
+    transform: translateY(-2px);
+    border-color: var(--muted);
+    color: var(--ink);
+  }
+
+  /* ---- 跨入指南彈窗 ---- */
+  .guide-mask{
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background: rgba(28,35,51,.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+  }
+  .guide-mask.open{ display: flex; }
+  .guide-panel{
+    position: relative;
+    width: min(560px, 100%);
+    max-height: 86vh;
+    overflow-y: auto;
+    padding: 26px 22px 28px;
+    border-radius: 18px;
+    background: var(--surface);
+    text-align: left;
+  }
+  .guide-close{
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font-size: 24px;
+    line-height: 1;
+    color: var(--muted);
+  }
+  .guide-title{ margin: 0 0 6px; font-size: 19px; font-weight: 800; color: var(--ink); }
+  .guide-sub{ margin: 0; font-size: 13px; line-height: 1.75; color: var(--muted); }
+  .guide-h{ margin: 24px 0 10px; font-size: 15px; font-weight: 800; color: var(--ink); }
+  .guide-table{ width: 100%; border-collapse: collapse; font-size: 13px; }
+  .guide-table th,
+  .guide-table td{
+    border: 1px solid var(--line);
+    padding: 9px 10px;
+    text-align: left;
+    vertical-align: top;
+    line-height: 1.65;
+  }
+  .guide-table th{ background: var(--c-teal-tint); color: var(--ink); font-weight: 700; }
+  .guide-table td{ color: var(--muted); }
+  .guide-table td:first-child{ color: var(--ink); font-weight: 700; }
+  .guide-step{
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 13px 14px;
+    margin-bottom: 10px;
+  }
+  .guide-step-no{ font-size: 12px; font-weight: 800; letter-spacing: .08em; color: var(--lanyard); }
+  .guide-step-name{ margin: 2px 0 6px; font-size: 15px; font-weight: 800; color: var(--ink); }
+  .guide-step-do{ margin: 0; font-size: 13.5px; line-height: 1.7; color: var(--muted); }
+  .guide-step-why{ margin: 6px 0 0; font-size: 13.5px; font-weight: 700; line-height: 1.7; color: var(--c-teal-dark); }
+  .guide-note{ margin: 20px 0 0; font-size: 12px; line-height: 1.7; color: var(--muted); }
+
   .result-divider{
     border-top: 1px dashed var(--line);
     margin: 22px 0 26px;
@@ -835,7 +925,10 @@
           <div class="card-name" id="card-name"></div>
           <div class="card-tagline" id="card-tagline"></div>
 
-          <a class="card-cta no-export" id="card-cta" href="https://www.104.com.tw/topic/digital-talent/jobs?category=product-manager&goto=lists&order=15&page=1" target="_blank" rel="noopener noreferrer" onclick="trackClick('cta')">查看專屬職缺</a>
+          <div class="card-cta-row no-export">
+            <a class="card-cta" id="card-cta" href="https://www.104.com.tw/topic/digital-talent/jobs?category=product-manager&goto=lists&order=15&page=1" target="_blank" rel="noopener noreferrer" onclick="trackClick('cta')">查看專屬職缺</a>
+            <button type="button" class="card-cta-ghost" id="card-guide-btn" onclick="openGuide()">查看跨入指南</button>
+          </div>
 
           <div class="result-divider"></div>
 
@@ -1768,6 +1861,92 @@ function applyPreviewIfRequested(){
 document.addEventListener('DOMContentLoaded', () => {
   applyPreviewIfRequested();
   checkSavedProgress();
+});
+</script>
+
+<!-- ===== 跨入 PM 指南彈窗 ===== -->
+<div class="guide-mask" id="guide-mask" onclick="closeGuideMask(event)">
+  <div class="guide-panel" role="dialog" aria-modal="true" aria-labelledby="guide-title">
+    <button type="button" class="guide-close" onclick="closeGuide()" aria-label="關閉">&times;</button>
+
+    <p class="guide-title" id="guide-title">跨入 PM 的準備方向</p>
+    <p class="guide-sub">不同背景跨進 PM，能發揮的優勢與要補的能力都不一樣。先看你的起點在哪，再看第一步怎麼走。</p>
+
+    <p class="guide-h">一、不同背景，發揮什麼優勢、補什麼能力</p>
+    <table class="guide-table">
+      <thead>
+        <tr>
+          <th>原本的職稱</th>
+          <th>關鍵優勢</th>
+          <th>提升 PM 職能方向</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>工程師／<br>資料分析師</td>
+          <td>邏輯思維強<br>判斷技術可行性</td>
+          <td>商業價值理解<br>洞察使用者需求</td>
+        </tr>
+        <tr>
+          <td>UI/UX 設計師</td>
+          <td>視覺化溝通<br>使用者同理心</td>
+          <td>數據分析<br>商業敏銳度</td>
+        </tr>
+        <tr>
+          <td>行銷／業務／BD</td>
+          <td>市場敏銳度高<br>了解客戶需求</td>
+          <td>產品開發流程<br>技術邏輯與架構</td>
+        </tr>
+        <tr>
+          <td>教育／顧問</td>
+          <td>團隊組織規劃<br>複雜資訊轉譯力</td>
+          <td>技術敏銳度<br>熟悉敏捷開發</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="guide-h">二、想成為 PM，從把自己當成產品開始</p>
+
+    <div class="guide-step">
+      <p class="guide-step-no">STEP 01</p>
+      <p class="guide-step-name">從需求開始</p>
+      <p class="guide-step-do">鎖定目標公司，拆解職缺需求</p>
+      <p class="guide-step-why">→ 了解你的用戶是誰、他想要什麼</p>
+    </div>
+
+    <div class="guide-step">
+      <p class="guide-step-no">STEP 02</p>
+      <p class="guide-step-name">把需求概念化</p>
+      <p class="guide-step-do">將職缺共通性收斂成關鍵字，對照自己的履歷</p>
+      <p class="guide-step-why">→ 盤點你滿足了用戶多少比例的需求</p>
+    </div>
+
+    <div class="guide-step" style="margin-bottom:0;">
+      <p class="guide-step-no">STEP 03</p>
+      <p class="guide-step-name">產出 MVP</p>
+      <p class="guide-step-do">寫一份履歷投看看，有面試就當作練習機會</p>
+      <p class="guide-step-why">→ 這場市場測試，就是「你」這個產品的 MVP</p>
+    </div>
+
+    <p class="guide-note">以上為職能方向參考，實際需求依各職缺說明為準。</p>
+  </div>
+</div>
+
+<script>
+function openGuide(){
+  if(typeof trackClick === 'function') trackClick('guide');
+  document.getElementById('guide-mask').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeGuide(){
+  document.getElementById('guide-mask').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeGuideMask(e){
+  if(e.target === e.currentTarget) closeGuide();
+}
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape') closeGuide();
 });
 </script>
 
